@@ -39,6 +39,32 @@ function TimerCircle({ remaining, total }) {
   );
 }
 
+// ── Large timer for beamer voting ─────────────────────────────────────────────
+function TimerCircleLarge({ remaining, total }) {
+  const r = 88;
+  const circ = 2 * Math.PI * r;
+  const pct  = total > 0 ? remaining / total : 0;
+  const color = remaining > total * 0.5 ? "#4ade80"
+              : remaining > total * 0.2 ? "#facc15"
+              : "#f43f5e";
+  return (
+    <div className="relative flex items-center justify-center" style={{ width: 220, height: 220 }}>
+      <svg width="220" height="220" className="-rotate-90 absolute inset-0">
+        <circle cx="110" cy="110" r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="8" />
+        <circle cx="110" cy="110" r={r} fill="none" stroke={color} strokeWidth="8"
+          strokeDasharray={`${pct * circ} ${circ}`} strokeLinecap="round"
+          style={{ transition: "stroke-dasharray 0.3s linear, stroke 0.5s",
+                   filter: `drop-shadow(0 0 16px ${color}80)` }} />
+      </svg>
+      <span className="relative z-10 font-bold tabular-nums"
+        style={{ fontSize: "clamp(4rem, 8vw, 7rem)", color,
+                 textShadow: `0 0 40px ${color}60` }}>
+        {remaining}
+      </span>
+    </div>
+  );
+}
+
 // ── Evaluation column ─────────────────────────────────────────────────────────
 function EvalSide({ name, emoji, votes, total, accentColor, winner }) {
   const pct     = total > 0 ? Math.round((votes.length / total) * 100) : 0;
@@ -138,14 +164,18 @@ function BeamerVoting({ gameState }) {
   const voted    = gameState?.voteCount ?? 0;
   const count    = gameState?.participantCount ?? 0;
   const pct      = count > 0 ? Math.round((voted / count) * 100) : 0;
-  const remaining = useCountdown(gameState?.timerEndsAt ?? null);
+  const timerEndsAt = gameState?.timerEndsAt ?? null;
+  const remaining = useCountdown(timerEndsAt);
   const duration  = gameState?.timerDuration ?? 0;
   useTimerSounds(remaining);
+
+  const timerActive  = timerEndsAt !== null;
+  const timerExpired = timerActive && remaining === 0;
 
   return (
     <div className="flex-1 flex flex-col items-center justify-center gap-8 p-12 animate-fade-in">
       {/* Progress */}
-      <div className="w-full max-w-4xl space-y-2">
+      <div className="w-full max-w-4xl space-y-2 shrink-0">
         <div className="flex justify-between text-sm text-gold/50 tracking-widest uppercase">
           <span>Frage {qi + 1} von {total}</span>
           <span>{voted} / {count} Stimmen</span>
@@ -157,23 +187,35 @@ function BeamerVoting({ gameState }) {
         </div>
       </div>
 
-      {/* Question + Timer */}
-      <div className="flex items-center gap-12 w-full max-w-4xl">
-        <div className="flex-1 card-gold p-10 text-center space-y-4">
-          <p className="ornament">Wer von beiden...</p>
-          <h2 className="font-serif italic text-white leading-snug"
-            style={{ fontSize: "clamp(1.8rem, 4vw, 3.5rem)" }}>
-            {gameState?.question}
-          </h2>
-        </div>
-
-        {remaining !== null && (
-          <TimerCircle remaining={remaining} total={duration} />
-        )}
+      {/* Question — always visible */}
+      <div className="card-gold p-10 text-center space-y-4 w-full max-w-4xl shrink-0">
+        <p className="ornament">Wer von beiden...</p>
+        <h2 className="font-serif italic text-white leading-snug"
+          style={{ fontSize: "clamp(1.8rem, 4vw, 3.5rem)" }}>
+          {gameState?.question}
+        </h2>
       </div>
 
+      {/* Timer / waiting — cross-fade */}
+      {timerActive && (
+        <div className="relative flex items-center justify-center shrink-0" style={{ height: 220 }}>
+          {/* Countdown — fades out at zero */}
+          <div style={{ opacity: timerExpired ? 0 : 1, transition: "opacity 0.8s ease",
+                        position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            {remaining !== null && <TimerCircleLarge remaining={remaining} total={duration} />}
+          </div>
+          {/* Waiting — fades in at zero */}
+          <div style={{ opacity: timerExpired ? 1 : 0, transition: "opacity 0.8s ease 0.4s",
+                        position: "absolute", inset: 0, display: "flex", flexDirection: "column",
+                        alignItems: "center", justifyContent: "center", gap: 12 }}>
+            <p className="text-white/60 text-3xl tracking-widest">Abstimmung beendet</p>
+            <p className="text-gold/40 text-lg tracking-widest">Warten auf Auswertung...</p>
+          </div>
+        </div>
+      )}
+
       {/* Vote progress bar */}
-      <div className="w-full max-w-4xl">
+      <div className="w-full max-w-4xl shrink-0">
         <div className="h-3 bg-white/5 rounded-full overflow-hidden">
           <div className="h-full rounded-full transition-all duration-500"
             style={{
