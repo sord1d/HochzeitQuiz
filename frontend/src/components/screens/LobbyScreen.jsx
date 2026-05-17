@@ -1,5 +1,6 @@
 import React from "react";
 import { useSocket } from "../../context/SocketContext";
+import { badgeStyle } from "../Badge";
 
 export default function LobbyScreen() {
   const { gameState, participant } = useSocket();
@@ -17,15 +18,12 @@ export default function LobbyScreen() {
         </div>
 
         <div className="card-gold p-10 space-y-6">
-          {/* Animated rings */}
           <div className="flex justify-center">
             <div className="relative w-24 h-24">
               <div className="absolute inset-0 rounded-full border border-gold/10 animate-ping" style={{ animationDuration: "2s" }} />
               <div className="absolute inset-3 rounded-full border border-gold/15 animate-ping" style={{ animationDuration: "2s", animationDelay: "0.4s" }} />
               <div className="absolute inset-6 rounded-full border border-gold/20 animate-ping" style={{ animationDuration: "2s", animationDelay: "0.8s" }} />
-              <div className="absolute inset-0 flex items-center justify-center text-4xl">
-                💍
-              </div>
+              <div className="absolute inset-0 flex items-center justify-center text-4xl">💍</div>
             </div>
           </div>
 
@@ -37,11 +35,8 @@ export default function LobbyScreen() {
           {participant && (
             <div className="flex justify-center">
               <span
-                className="px-5 py-2 rounded-full text-sm font-bold text-surface shadow-lg"
-                style={{
-                  backgroundColor: participant.color,
-                  boxShadow: `0 4px 15px ${participant.color}50`,
-                }}
+                className="px-5 py-2 rounded-full text-sm font-bold text-white shadow-lg"
+                style={badgeStyle(participant.colorBase, participant.colorAccent)}
               >
                 {participant.name}
               </span>

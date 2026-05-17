@@ -34,8 +34,8 @@ export function SocketProvider({ children }) {
     return () => socket.disconnect();
   }, []);
 
-  const join = (name, color) => {
-    socketRef.current?.emit("join", { name, color });
+  const join = (name, colorBase, colorAccent) => {
+    socketRef.current?.emit("join", { name, colorBase, colorAccent });
   };
 
   const vote = (choice) => {

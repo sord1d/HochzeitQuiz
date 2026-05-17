@@ -1,20 +1,63 @@
 import React, { useState } from "react";
 import { useSocket } from "../../context/SocketContext";
 
-const PRESET_COLORS = [
-  "#f43f5e", "#fb923c", "#facc15", "#4ade80", "#34d399",
-  "#38bdf8", "#818cf8", "#c084fc", "#f472b6", "#a78bfa",
+const COLORS = [
+  { hex: "#f43f5e", label: "Rose"     },
+  { hex: "#fb923c", label: "Orange"   },
+  { hex: "#facc15", label: "Gelb"     },
+  { hex: "#4ade80", label: "Grün"     },
+  { hex: "#34d399", label: "Smaragd"  },
+  { hex: "#38bdf8", label: "Himmel"   },
+  { hex: "#818cf8", label: "Indigo"   },
+  { hex: "#c084fc", label: "Lila"     },
+  { hex: "#f472b6", label: "Pink"     },
+  { hex: "#a78bfa", label: "Violett"  },
 ];
+
+function badgeStyle(base, accent) {
+  return {
+    background: accent !== base
+      ? `linear-gradient(135deg, ${base}, ${accent})`
+      : base,
+    boxShadow: `0 4px 16px ${accent}60`,
+  };
+}
+
+function ColorRow({ label, selected, onChange }) {
+  return (
+    <div className="space-y-2">
+      <label className="text-xs text-gold/70 font-medium tracking-widest uppercase">{label}</label>
+      <div className="grid grid-cols-5 gap-2.5">
+        {COLORS.map(({ hex }) => (
+          <button
+            key={hex}
+            type="button"
+            onClick={() => onChange(hex)}
+            className="w-full aspect-square rounded-xl transition-all duration-200 active:scale-90"
+            style={{
+              backgroundColor: hex,
+              boxShadow: selected === hex
+                ? `0 0 0 2px #0f172a, 0 0 0 4px ${hex}, 0 0 12px ${hex}60`
+                : "none",
+              transform: selected === hex ? "scale(1.12)" : "scale(1)",
+            }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function OnboardingScreen() {
   const { join, connected } = useSocket();
   const [name, setName] = useState("");
-  const [color, setColor] = useState(PRESET_COLORS[0]);
+  const [colorBase, setColorBase]     = useState(COLORS[0].hex);
+  const [colorAccent, setColorAccent] = useState(COLORS[8].hex);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!name.trim()) return;
-    join(name.trim(), color);
+    join(name.trim(), colorBase, colorAccent);
   };
 
   return (
@@ -32,6 +75,8 @@ export default function OnboardingScreen() {
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="card-gold p-6 space-y-6">
+
+          {/* Name */}
           <div className="space-y-2">
             <label className="text-xs text-gold/70 font-medium tracking-widest uppercase">Dein Name</label>
             <input
@@ -46,48 +91,28 @@ export default function OnboardingScreen() {
             />
           </div>
 
-          <div className="space-y-3">
-            <label className="text-xs text-gold/70 font-medium tracking-widest uppercase">Deine Farbe</label>
-            <div className="grid grid-cols-5 gap-3">
-              {PRESET_COLORS.map((c) => (
-                <button
-                  key={c}
-                  type="button"
-                  onClick={() => setColor(c)}
-                  className="w-full aspect-square rounded-xl transition-all duration-200 active:scale-90"
-                  style={{
-                    backgroundColor: c,
-                    boxShadow: color === c
-                      ? `0 0 0 2px #0f172a, 0 0 0 4px ${c}, 0 0 12px ${c}60`
-                      : "none",
-                    transform: color === c ? "scale(1.12)" : "scale(1)",
-                  }}
-                />
-              ))}
-            </div>
-          </div>
+          {/* Base color */}
+          <ColorRow label="Basisfarbe" selected={colorBase} onChange={setColorBase} />
 
-          {/* Preview badge */}
-          <div className="flex justify-center py-1">
+          {/* Accent color */}
+          <ColorRow label="Akzentfarbe" selected={colorAccent} onChange={setColorAccent} />
+
+          {/* Preview */}
+          <div className="flex flex-col items-center gap-2 py-1">
+            <p className="text-xs text-gold/40 tracking-widest uppercase">Vorschau</p>
             <span
-              className="px-5 py-2 rounded-full text-sm font-bold text-surface shadow-lg transition-all duration-300"
-              style={{
-                backgroundColor: color,
-                boxShadow: `0 4px 15px ${color}60`,
-              }}
+              className="px-6 py-2 rounded-full text-sm font-bold text-white shadow-lg transition-all duration-300"
+              style={badgeStyle(colorBase, colorAccent)}
             >
-              {name || "Vorschau"}
+              {name || "Dein Name"}
             </span>
           </div>
 
           <button
             type="submit"
             disabled={!name.trim() || !connected}
-            className="btn-primary w-full text-surface font-bold text-base"
-            style={{
-              backgroundColor: color,
-              boxShadow: name.trim() ? `0 4px 20px ${color}50` : "none",
-            }}
+            className="btn-primary w-full text-white font-bold text-base"
+            style={name.trim() ? badgeStyle(colorBase, colorAccent) : {}}
           >
             {connected ? "Teilnehmen" : "Verbinde..."}
           </button>

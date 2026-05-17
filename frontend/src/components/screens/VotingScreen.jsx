@@ -1,5 +1,6 @@
 import React from "react";
 import { useSocket } from "../../context/SocketContext";
+import { badgeStyle } from "../Badge";
 
 export default function VotingScreen() {
   const { gameState, participant, myVotes, vote } = useSocket();
@@ -17,11 +18,8 @@ export default function VotingScreen() {
           <span className="text-gold/60 tracking-widest">Frage {qi + 1} / {total}</span>
           {participant && (
             <span
-              className="px-3 py-1 rounded-full font-bold text-surface text-xs shadow-md"
-              style={{
-                backgroundColor: participant.color,
-                boxShadow: `0 2px 10px ${participant.color}50`,
-              }}
+              className="px-3 py-1 rounded-full font-bold text-white text-xs shadow-md"
+              style={badgeStyle(participant.colorBase, participant.colorAccent)}
             >
               {participant.name}
             </span>
@@ -32,7 +30,7 @@ export default function VotingScreen() {
             className="h-full rounded-full transition-all duration-700"
             style={{
               width: `${((qi + 1) / total) * 100}%`,
-              background: `linear-gradient(90deg, #d4af5f, #e8c97a)`,
+              background: "linear-gradient(90deg, #d4af5f, #e8c97a)",
             }}
           />
         </div>
@@ -47,7 +45,6 @@ export default function VotingScreen() {
           </h2>
         </div>
 
-        {/* Vote buttons */}
         {!hasVoted ? (
           <div className="grid grid-cols-2 gap-4">
             <button
@@ -74,8 +71,7 @@ export default function VotingScreen() {
             <div className="text-5xl mb-2">✓</div>
             <p className="text-white font-semibold text-xl">Stimme abgegeben!</p>
             <p className="text-surface-3 text-sm">
-              Du hast für{" "}
-              <span className="font-bold text-white">{myChoice}</span> gestimmt.
+              Du hast für <span className="font-bold text-white">{myChoice}</span> gestimmt.
             </p>
             <p className="text-gold/40 text-xs tracking-wider mt-2">Warten auf Auswertung...</p>
           </div>

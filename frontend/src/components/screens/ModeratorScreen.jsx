@@ -1,19 +1,32 @@
-import React from "react";
+import React, { useState } from "react";
 import { useSocket } from "../../context/SocketContext";
+import { Badge } from "../Badge";
 
-function Badge({ name, color, dim = false }) {
+// ── Reset button mit Bestätigung ──────────────────────────────────────────────
+function ResetButton({ onReset }) {
+  const [confirm, setConfirm] = useState(false);
+
+  const handleClick = () => {
+    if (confirm) {
+      onReset();
+      setConfirm(false);
+    } else {
+      setConfirm(true);
+      setTimeout(() => setConfirm(false), 4000);
+    }
+  };
+
   return (
-    <span
-      className={`inline-block px-3 py-1.5 rounded-full text-sm font-bold text-surface m-1 transition-all duration-300 ${
-        dim ? "opacity-30 grayscale" : ""
+    <button
+      onClick={handleClick}
+      className={`text-xs px-3 py-1 rounded-full border transition-all duration-200 ${
+        confirm
+          ? "border-rose-500/60 text-rose-400 bg-rose-900/30"
+          : "border-white/10 text-surface-3 hover:border-white/20 hover:text-white/60"
       }`}
-      style={{
-        backgroundColor: color,
-        boxShadow: dim ? "none" : `0 2px 8px ${color}40`,
-      }}
     >
-      {name}
-    </span>
+      {confirm ? "Sicher? Tippe nochmal →" : "↺ Reset"}
+    </button>
   );
 }
 
@@ -33,21 +46,19 @@ function ModLobby({ gameState, modStartGame }) {
       <div className="card-gold p-6 space-y-5">
         <div className="flex items-center justify-between">
           <h2 className="text-white font-semibold">Verbundene Gäste</h2>
-          <span
-            className="text-xs px-3 py-1 rounded-full font-bold"
-            style={{ backgroundColor: "rgba(212,175,95,0.15)", color: "#d4af5f" }}
-          >
+          <span className="text-xs px-3 py-1 rounded-full font-bold bg-gold-muted text-gold">
             {participants.length} Personen
           </span>
         </div>
-
         <div className="min-h-[80px] flex flex-wrap content-start">
           {participants.length === 0 ? (
             <p className="text-surface-3 text-sm w-full text-center py-6">
               Noch niemand verbunden. Gäste können jetzt beitreten.
             </p>
           ) : (
-            participants.map((p) => <Badge key={p.id} name={p.name} color={p.color} />)
+            participants.map((p) => (
+              <Badge key={p.id} name={p.name} colorBase={p.colorBase} colorAccent={p.colorAccent} />
+            ))
           )}
         </div>
       </div>
@@ -55,7 +66,7 @@ function ModLobby({ gameState, modStartGame }) {
       <button
         onClick={modStartGame}
         disabled={participants.length === 0}
-        className="btn-primary w-full text-surface font-bold text-lg py-4"
+        className="btn-primary w-full text-white font-bold text-lg py-4"
         style={{ background: "linear-gradient(135deg, #d4af5f, #b8943a)" }}
       >
         Spiel starten →
@@ -74,44 +85,34 @@ function ModVoting({ gameState, modShowEvaluation }) {
   const participants = gameState?.participants ?? [];
   const votedIds = new Set(gameState?.votedParticipantIds ?? []);
 
-  const votedList = participants.filter((p) => votedIds.has(p.id));
+  const votedList   = participants.filter((p) =>  votedIds.has(p.id));
   const pendingList = participants.filter((p) => !votedIds.has(p.id));
 
   return (
     <div className="space-y-5 animate-fade-in">
-      {/* Progress bar */}
       <div className="flex items-center gap-3">
-        <span className="text-gold/50 text-xs tracking-widest shrink-0">
-          Frage {qi + 1} / {total}
-        </span>
+        <span className="text-gold/50 text-xs tracking-widest shrink-0">Frage {qi + 1} / {total}</span>
         <div className="flex-1 h-0.5 bg-white/5 rounded-full overflow-hidden">
           <div
             className="h-full rounded-full transition-all duration-500"
-            style={{
-              width: `${((qi + 1) / total) * 100}%`,
-              background: "linear-gradient(90deg, #d4af5f, #e8c97a)",
-            }}
+            style={{ width: `${((qi + 1) / total) * 100}%`, background: "linear-gradient(90deg, #d4af5f, #e8c97a)" }}
           />
         </div>
       </div>
 
-      {/* Question */}
       <div className="card-gold p-7 text-center space-y-2">
         <p className="ornament">Aktuelle Frage</p>
         <h2 className="font-serif text-3xl italic text-white">{gameState?.question}</h2>
       </div>
 
-      {/* Vote progress */}
       <div className="card p-5 space-y-4">
         <div className="flex items-baseline justify-between">
           <p className="text-white font-semibold">Abstimmung läuft</p>
           <p className="text-3xl font-bold text-white">
-            {voted}
-            <span className="text-surface-3 text-lg font-normal"> / {count}</span>
+            {voted}<span className="text-surface-3 text-lg font-normal"> / {count}</span>
           </p>
         </div>
 
-        {/* Bar */}
         <div className="h-2 bg-white/5 rounded-full overflow-hidden">
           <div
             className="h-full rounded-full transition-all duration-500"
@@ -124,35 +125,29 @@ function ModVoting({ gameState, modShowEvaluation }) {
           />
         </div>
 
-        {/* Who voted / who hasn't */}
-        <div className="grid grid-cols-2 gap-4 pt-2">
+        <div className="grid grid-cols-2 gap-4 pt-1">
           <div>
-            <p className="text-xs text-emerald-400/70 font-medium mb-2 flex items-center gap-1">
+            <p className="text-xs text-emerald-400/70 font-medium mb-2 flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />
               Abgestimmt ({votedList.length})
             </p>
             <div className="flex flex-wrap">
               {votedList.map((p) => (
-                <Badge key={p.id} name={p.name} color={p.color} />
+                <Badge key={p.id} name={p.name} colorBase={p.colorBase} colorAccent={p.colorAccent} size="sm" />
               ))}
-              {votedList.length === 0 && (
-                <p className="text-surface-3 text-xs py-1">Noch niemand</p>
-              )}
+              {votedList.length === 0 && <p className="text-surface-3 text-xs py-1">Noch niemand</p>}
             </div>
           </div>
-
           <div>
-            <p className="text-xs text-surface-3 font-medium mb-2 flex items-center gap-1">
+            <p className="text-xs text-surface-3 font-medium mb-2 flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-surface-2 inline-block" />
               Ausstehend ({pendingList.length})
             </p>
             <div className="flex flex-wrap">
               {pendingList.map((p) => (
-                <Badge key={p.id} name={p.name} color={p.color} dim />
+                <Badge key={p.id} name={p.name} colorBase={p.colorBase} colorAccent={p.colorAccent} size="sm" dim />
               ))}
-              {pendingList.length === 0 && (
-                <p className="text-emerald-400/60 text-xs py-1">Alle fertig ✓</p>
-              )}
+              {pendingList.length === 0 && <p className="text-emerald-400/60 text-xs py-1">Alle fertig ✓</p>}
             </div>
           </div>
         </div>
@@ -176,25 +171,20 @@ function EvalColumn({ name, emoji, votes, total, color }) {
       <div className="text-center">
         <span className="text-2xl">{emoji}</span>
         <p className="font-bold text-white mt-1">{name}</p>
-        <p
-          className="text-4xl font-serif font-bold leading-none my-2"
-          style={{ color, textShadow: `0 0 20px ${color}50` }}
-        >
+        <p className="text-4xl font-serif font-bold leading-none my-2"
+          style={{ color, textShadow: `0 0 20px ${color}50` }}>
           {pct}%
         </p>
         <p className="text-surface-3 text-xs">{votes.length} Stimmen</p>
       </div>
       <div className="h-1 bg-white/5 rounded-full overflow-hidden">
-        <div
-          className="h-full rounded-full transition-all duration-1000"
-          style={{ width: `${pct}%`, backgroundColor: color }}
-        />
+        <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: color }} />
       </div>
       <div className="flex flex-wrap justify-center">
-        {votes.map((v) => <Badge key={v.id} name={v.name} color={v.color} />)}
-        {votes.length === 0 && (
-          <p className="text-surface-3 text-xs py-2">Keine Stimmen</p>
-        )}
+        {votes.map((v) => (
+          <Badge key={v.id} name={v.name} colorBase={v.colorBase} colorAccent={v.colorAccent} size="sm" />
+        ))}
+        {votes.length === 0 && <p className="text-surface-3 text-xs py-2">Keine Stimmen</p>}
       </div>
     </div>
   );
@@ -213,12 +203,10 @@ function ModEvaluation({ gameState, modNextQuestion }) {
         <h2 className="font-serif text-2xl italic text-white">{ev?.question}</h2>
         <p className="text-gold/50 text-sm">{ev?.voted} von {ev?.total} Stimmen</p>
       </div>
-
       <div className="flex gap-4">
         <EvalColumn name="Patrick" emoji="👔" votes={ev?.patrick ?? []} total={ev?.voted ?? 0} color="#38bdf8" />
         <EvalColumn name="Theresa" emoji="👗" votes={ev?.theresa ?? []} total={ev?.voted ?? 0} color="#f472b6" />
       </div>
-
       <button
         onClick={modNextQuestion}
         className={`btn-primary w-full text-white font-bold text-lg py-4 ${
@@ -231,7 +219,6 @@ function ModEvaluation({ gameState, modNextQuestion }) {
   );
 }
 
-// ── Finished ──────────────────────────────────────────────────────────────────
 function ModFinished({ modResetGame }) {
   return (
     <div className="text-center space-y-6 animate-fade-in py-12">
@@ -239,14 +226,8 @@ function ModFinished({ modResetGame }) {
       <div className="space-y-2">
         <p className="ornament">Das war's!</p>
         <h2 className="font-serif text-4xl italic text-white">Spiel beendet!</h2>
-        <p className="text-gold/50">Herzlichen Glückwunsch an Patrick & Theresa!</p>
+        <p className="text-gold/50">Herzlichen Glückwunsch an Patrick &amp; Theresa!</p>
       </div>
-      <button
-        onClick={modResetGame}
-        className="btn-primary bg-surface-2 hover:bg-surface-3 text-white mt-4"
-      >
-        Neues Spiel starten
-      </button>
     </div>
   );
 }
@@ -261,14 +242,15 @@ export default function ModeratorScreen() {
   return (
     <div className="min-h-screen p-6">
       <div className="max-w-2xl mx-auto space-y-6">
-        <div className="flex justify-end">
-          <span
-            className={`flex items-center gap-2 text-xs px-3 py-1 rounded-full ${
-              connected
-                ? "bg-emerald-900/30 text-emerald-400 border border-emerald-500/20"
-                : "bg-rose-900/30 text-rose-400 border border-rose-500/20"
-            }`}
-          >
+
+        {/* Top bar */}
+        <div className="flex items-center justify-between">
+          <ResetButton onReset={modResetGame} />
+          <span className={`flex items-center gap-2 text-xs px-3 py-1 rounded-full border ${
+            connected
+              ? "border-emerald-500/20 text-emerald-400 bg-emerald-900/30"
+              : "border-rose-500/20 text-rose-400 bg-rose-900/30"
+          }`}>
             <span className={`w-1.5 h-1.5 rounded-full ${connected ? "bg-emerald-400" : "bg-rose-400"}`} />
             {connected ? "Verbunden" : "Getrennt"}
           </span>
@@ -278,6 +260,7 @@ export default function ModeratorScreen() {
         {status === "VOTING"     && <ModVoting      gameState={gameState} modShowEvaluation={modShowEvaluation} />}
         {status === "EVALUATION" && <ModEvaluation  gameState={gameState} modNextQuestion={modNextQuestion} />}
         {status === "FINISHED"   && <ModFinished    modResetGame={modResetGame} />}
+
       </div>
     </div>
   );

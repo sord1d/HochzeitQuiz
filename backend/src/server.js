@@ -98,9 +98,14 @@ io.on("connection", (socket) => {
   socket.emit("state_update", initialPayload);
 
   // ── Participant joins ──
-  socket.on("join", ({ name, color }) => {
-    if (!name || !color) return;
-    const participant = { id: socket.id, name: name.trim().slice(0, 30), color };
+  socket.on("join", ({ name, colorBase, colorAccent }) => {
+    if (!name || !colorBase) return;
+    const participant = {
+      id: socket.id,
+      name: name.trim().slice(0, 30),
+      colorBase,
+      colorAccent: colorAccent || colorBase,
+    };
     participants.set(socket.id, participant);
     socket.emit("joined", participant);
     broadcastState();
