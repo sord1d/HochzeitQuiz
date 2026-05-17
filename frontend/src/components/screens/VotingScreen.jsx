@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useSocket } from "../../context/SocketContext";
 import { badgeStyle } from "../Badge";
 import { useCountdown } from "../../hooks/useCountdown";
 import { useTimerSounds } from "../../hooks/useTimerSounds";
+import { unlockAudio } from "../../audio";
 
 // SVG countdown ring
 function TimerRing({ remaining, total }) {
@@ -48,6 +49,17 @@ export default function VotingScreen() {
   const timerDuration = gameState?.timerDuration ?? 0;
   const remaining = useCountdown(timerEndsAt);
   useTimerSounds(remaining);
+
+  // Unlock AudioContext on first interaction (iOS requires gesture)
+  useEffect(() => {
+    const handler = () => unlockAudio();
+    document.addEventListener("touchstart", handler, { once: true, passive: true });
+    document.addEventListener("mousedown",  handler, { once: true });
+    return () => {
+      document.removeEventListener("touchstart", handler);
+      document.removeEventListener("mousedown",  handler);
+    };
+  }, []);
   const timerActive = timerEndsAt !== null;
   const timerExpired = timerActive && remaining === 0;
   const votingClosed = hasVoted || timerExpired;
