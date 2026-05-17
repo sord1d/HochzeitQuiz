@@ -1,46 +1,73 @@
 # Schuhspiel – Patrick & Theresa 💍
 
-Real-time wedding game web app. Guests vote live on their smartphones while the couple sits back-to-back with shoes.
+Real-time Hochzeitsspiel: Gäste stimmen live per Smartphone ab, während das Brautpaar Rücken an Rücken sitzt.
 
-## Architecture
+## Architektur
 
 ```
-frontend (React + Vite + Tailwind)  ←→  backend (Node.js + Socket.io)
-         nginx:80                              express:3001
+Browser (Gäste/Moderator)
+        │ HTTPS
+        ▼
+   Caddy :443          ← SSL-Terminierung + Reverse Proxy (automatisch Let's Encrypt)
+   ├── /socket.io/* → backend:3001  (Node.js + Socket.io)
+   └── /*           → frontend:80  (nginx, React-App)
 ```
 
-All real-time state is managed in-memory on the backend via Socket.io. No external database required.
+Kein externer Dienst, kein Cloud-Abo – alles läuft im Docker-Netzwerk auf deinem vServer.
 
-## Deployment (vServer)
+---
 
-### 1. Set your server's IP/domain in `.env`
+## Deployment auf dem vServer
+
+### Variante A: Geführtes Installationsskript (empfohlen)
+
+```bash
+git clone <dieses-repo> hochzeit && cd hochzeit
+bash install.sh
+```
+
+Das Skript:
+1. prüft Docker & Docker Compose
+2. fragt Domain + E-Mail interaktiv ab
+3. schreibt `.env` automatisch
+4. prüft den DNS-A-Record
+5. baut alle Images und startet die Container
+6. wartet auf den Health-Check und zeigt die fertigen URLs
+
+**Voraussetzung:** A-Record der Domain zeigt bereits auf die vServer-IP.
+
+---
+
+### Variante B: Manuell
+
+**1. `.env` befüllen**
 
 ```env
-VITE_BACKEND_URL=http://YOUR_SERVER_IP:3001
-BACKEND_PORT=3001
-FRONTEND_PORT=80
+DOMAIN=hochzeit.beispiel.de
+LETSENCRYPT_EMAIL=deine@email.de
+VITE_BACKEND_URL=https://hochzeit.beispiel.de
 ```
 
-> If you use HTTPS/reverse proxy (nginx, Caddy), set `VITE_BACKEND_URL=https://yourdomain.com` and proxy `/socket.io` to port 3001.
-
-### 2. Build and start
+**2. Bauen und starten**
 
 ```bash
 docker compose up -d --build
 ```
 
-### 3. Access
+**3. URLs**
 
-| Role        | URL                            |
-|-------------|--------------------------------|
-| Guests      | `http://YOUR_SERVER_IP`        |
-| Moderator   | `http://YOUR_SERVER_IP/moderator` |
+| Rolle      | URL                                    |
+|------------|----------------------------------------|
+| Gäste      | `https://hochzeit.beispiel.de`         |
+| Moderator  | `https://hochzeit.beispiel.de/moderator` |
 
-Share the guest URL as a QR code. Open the moderator URL on your laptop/tablet.
+> SSL-Zertifikat wird beim ersten Aufruf automatisch von Caddy/Let's Encrypt geholt (~10–30 Sek.).
 
-## Local development (without Docker)
+---
 
-Requires Node.js 18+.
+## Lokale Entwicklung (ohne Docker)
+
+Node.js 18+ erforderlich.
 
 ```bash
 # Terminal 1 – Backend
@@ -50,18 +77,36 @@ cd backend && npm install && npm run dev
 cd frontend && npm install && npm run dev
 ```
 
-Frontend: http://localhost:5173  
+Frontend: http://localhost:5173
 Moderator: http://localhost:5173/moderator
 
-## Game flow
+---
 
-1. Guests open the app → enter name + pick color → join lobby
-2. Moderator sees all connected guests → clicks **Spiel starten**
-3. For each question: guests vote Patrick or Theresa → moderator clicks **Auswertung anzeigen** → results with colored name badges → **Nächste Frage**
-4. After 16 questions: finished screen
+## Spielablauf
+
+1. Gäste öffnen die App → Name + Farbe wählen → Lobby
+2. Moderator sieht alle verbundenen Gäste → **Spiel starten**
+3. Pro Frage: Gäste tippen Patrick oder Theresa → Moderator klickt **Auswertung anzeigen** → Ergebnisse mit farbigen Namens-Badges → **Nächste Frage**
+4. Nach 16 Fragen: Abschlussscreen
+
+---
+
+## Nützliche Befehle
+
+```bash
+docker compose logs -f          # Live-Logs aller Container
+docker compose logs caddy       # Nur Caddy (SSL-Fehler, Zertifikat-Status)
+docker compose ps               # Status aller Container
+docker compose restart          # Neustart ohne Rebuild
+docker compose down             # Alles stoppen (Zertifikate bleiben im Volume)
+docker compose down -v          # Alles + Volumes löschen (Zertifikate weg!)
+```
+
+---
 
 ## Tech Stack
 
-- **Frontend:** React 18, Vite, Tailwind CSS 3, React Router 6, socket.io-client
-- **Backend:** Node.js, Express, Socket.io 4
-- **Infra:** Docker, Docker Compose, nginx (serving built frontend)
+- **Frontend:** React 18, Vite 5, Tailwind CSS 3, React Router 6, socket.io-client
+- **Backend:** Node.js, Express 4, Socket.io 4 (In-Memory-State)
+- **Reverse Proxy:** Caddy 2 (automatisches HTTPS via Let's Encrypt)
+- **Infra:** Docker, Docker Compose, nginx (statisches Frontend-Serving)

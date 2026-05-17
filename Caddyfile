@@ -1,0 +1,13 @@
+{
+	email {$LETSENCRYPT_EMAIL}
+}
+
+{$DOMAIN} {
+	encode gzip
+
+	# Socket.io braucht WebSocket-Upgrade – zuerst matchen
+	reverse_proxy /socket.io/* backend:3001
+
+	# Alles andere → React-Frontend
+	reverse_proxy * frontend:80
+}
