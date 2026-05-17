@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useSocket } from "../../context/SocketContext";
+import { unlockAudio } from "../../audio";
 
 const COLORS = [
   { hex: "#f43f5e", label: "Rose"     },
@@ -57,6 +58,7 @@ export default function OnboardingScreen() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!name.trim()) return;
+    unlockAudio(); // iOS: AudioContext must be unlocked inside a user gesture
     join(name.trim(), colorBase, colorAccent);
   };
 
