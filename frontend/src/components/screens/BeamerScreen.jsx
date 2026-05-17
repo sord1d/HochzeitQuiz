@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useSocket } from "../../context/SocketContext";
 import { useCountdown } from "../../hooks/useCountdown";
+import { useTimerSounds } from "../../hooks/useTimerSounds";
+import { unlockAudio } from "../../audio";
 import { Badge } from "../Badge";
 
 // ── Animated percentage number ────────────────────────────────────────────────
@@ -138,6 +140,7 @@ function BeamerVoting({ gameState }) {
   const pct      = count > 0 ? Math.round((voted / count) * 100) : 0;
   const remaining = useCountdown(gameState?.timerEndsAt ?? null);
   const duration  = gameState?.timerDuration ?? 0;
+  useTimerSounds(remaining);
 
   return (
     <div className="flex-1 flex flex-col items-center justify-center gap-8 p-12 animate-fade-in">
@@ -237,6 +240,7 @@ export default function BeamerScreen() {
 
   return (
     <div className="h-screen flex flex-col overflow-hidden bg-surface"
+      onClick={unlockAudio}
       style={{ background: "#0f172a radial-gradient(ellipse 80% 50% at 50% -10%, rgba(212,175,95,0.07) 0%, transparent 60%)" }}>
 
       {/* Thin top bar */}
