@@ -13,7 +13,7 @@ services:
 
   backend:
     ports:
-      - "127.0.0.1:3001:3001"
+      - "127.0.0.1:${BACKEND_INTERNAL_PORT:-3069}:3001"
 
   # Caddy durch no-op ersetzen – startet, tut nichts, beendet sich sofort
   caddy:
