@@ -48,15 +48,15 @@ function TimerCircleLarge({ remaining, total }) {
               : remaining > total * 0.2 ? "#facc15"
               : "#f43f5e";
   return (
-    <div className="relative flex items-center justify-center" style={{ width: 300, height: 300 }}>
-      <svg width="300" height="300" className="-rotate-90 absolute inset-0">
+    <div className="relative" style={{ width: 300, height: 300 }}>
+      <svg width="300" height="300" overflow="visible" className="-rotate-90 absolute inset-0">
         <circle cx="150" cy="150" r={r} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="12" />
         <circle cx="150" cy="150" r={r} fill="none" stroke={color} strokeWidth="12"
           strokeDasharray={`${pct * circ} ${circ}`} strokeLinecap="round"
           style={{ transition: "stroke-dasharray 0.3s linear, stroke 0.5s",
                    filter: `drop-shadow(0 0 24px ${color}90)` }} />
       </svg>
-      <span className="relative z-10 font-bold tabular-nums"
+      <span className="absolute inset-0 flex items-center justify-center font-bold tabular-nums"
         style={{ fontSize: "8rem", lineHeight: 1, color,
                  textShadow: `0 0 60px ${color}80` }}>
         {remaining}
