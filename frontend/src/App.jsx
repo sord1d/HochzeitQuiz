@@ -7,6 +7,7 @@ import VotingScreen from "./components/screens/VotingScreen";
 import EvaluationScreen from "./components/screens/EvaluationScreen";
 import FinishedScreen from "./components/screens/FinishedScreen";
 import ModeratorScreen from "./components/screens/ModeratorScreen";
+import BeamerScreen from "./components/screens/BeamerScreen";
 
 function ParticipantView() {
   const { participant, gameState } = useSocket();
@@ -25,6 +26,7 @@ export default function App() {
     <SocketProvider>
       <Routes>
         <Route path="/moderator" element={<ModeratorScreen />} />
+        <Route path="/beamer" element={<BeamerScreen />} />
         <Route path="*" element={<ParticipantView />} />
       </Routes>
     </SocketProvider>
