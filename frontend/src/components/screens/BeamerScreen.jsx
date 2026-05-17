@@ -78,56 +78,59 @@ function EvalSide({ name, emoji, votes, total, accentColor, winner }) {
 
   return (
     <div
-      className="flex-1 flex flex-col items-center pt-10 pb-8 px-8 gap-6 relative overflow-hidden"
+      className="flex-1 flex flex-col items-center justify-between py-8 px-10 gap-5 relative overflow-hidden"
       style={{
-        backgroundColor: `${accentColor}${winner ? "18" : "0c"}`,
-        borderRight: accentColor === "#38bdf8" ? `1px solid rgba(255,255,255,0.06)` : "none",
-        transition: "background-color 1s ease",
+        backgroundColor: `${accentColor}${winner ? "15" : "08"}`,
+        borderRight: accentColor === "#38bdf8" ? `1px solid rgba(255,255,255,0.07)` : "none",
+        transition: "background-color 1.2s ease",
       }}
     >
-      {/* Glow behind winner */}
-      {winner && (
+      {/* Winner glow — stronger, two layers */}
+      {winner && (<>
         <div className="absolute inset-0 pointer-events-none"
-          style={{ background: `radial-gradient(ellipse 70% 50% at 50% 0%, ${accentColor}20, transparent)` }} />
-      )}
+          style={{ background: `radial-gradient(ellipse 80% 60% at 50% 0%, ${accentColor}28, transparent 70%)` }} />
+        <div className="absolute inset-0 pointer-events-none"
+          style={{ background: `radial-gradient(ellipse 60% 40% at 50% 100%, ${accentColor}10, transparent 70%)` }} />
+      </>)}
 
-      <div className="text-center space-y-1 relative z-10">
-        <div className="text-6xl">{emoji}</div>
-        <p className="text-2xl font-bold text-white tracking-wide">{name}</p>
+      {/* Name + emoji */}
+      <div className="text-center space-y-2 relative z-10">
+        <div style={{ fontSize: "clamp(3rem, 6vw, 5rem)" }}>{emoji}</div>
+        <p className="font-serif italic text-white tracking-wide"
+          style={{ fontSize: "clamp(1.6rem, 3.5vw, 3rem)" }}>
+          {name}
+        </p>
         {winner && (
-          <span className="inline-block text-xs px-3 py-0.5 rounded-full font-semibold"
-            style={{ backgroundColor: `${accentColor}30`, color: accentColor }}>
+          <span className="inline-block text-sm px-4 py-1 rounded-full font-semibold tracking-wider"
+            style={{ backgroundColor: `${accentColor}25`, color: accentColor,
+                     boxShadow: `0 0 16px ${accentColor}40` }}>
             Mehrheit ✓
           </span>
         )}
       </div>
 
       {/* Big percentage */}
-      <div className="relative z-10 text-center">
-        <p className="font-serif leading-none"
+      <div className="relative z-10 text-center leading-none">
+        <p className="font-serif"
           style={{
-            fontSize: "clamp(5rem, 14vw, 11rem)",
+            fontSize: "clamp(4.5rem, 11vw, 9rem)",
             color: accentColor,
-            textShadow: `0 0 60px ${accentColor}50`,
+            textShadow: `0 0 80px ${accentColor}60, 0 0 20px ${accentColor}30`,
           }}>
           {animPct}%
         </p>
-        <p className="text-white/40 text-lg">{votes.length} Stimme{votes.length !== 1 ? "n" : ""}</p>
-      </div>
-
-      {/* Bar */}
-      <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden relative z-10">
-        <div className="h-full rounded-full transition-all duration-1000"
-          style={{ width: `${animPct}%`, backgroundColor: accentColor }} />
+        <p className="text-white/35 text-xl mt-1">
+          {votes.length} Stimme{votes.length !== 1 ? "n" : ""}
+        </p>
       </div>
 
       {/* Name badges */}
-      <div className="flex flex-wrap justify-center relative z-10 overflow-y-auto max-h-40">
+      <div className="flex flex-wrap justify-center gap-1 relative z-10 overflow-y-auto max-h-36 w-full">
         {votes.map((v, i) => (
           <Badge key={v.id} name={v.name} colorBase={v.colorBase} colorAccent={v.colorAccent}
             size="md" index={i} />
         ))}
-        {votes.length === 0 && <p className="text-white/20 text-sm">Keine Stimmen</p>}
+        {votes.length === 0 && <p className="text-white/20 text-base">Keine Stimmen</p>}
       </div>
     </div>
   );
@@ -249,12 +252,34 @@ function BeamerEvaluation({ gameState }) {
   const theresaWins = ev.theresa.length >= ev.patrick.length;
   const tie = ev.patrick.length === ev.theresa.length;
 
+  const total      = ev.voted || 1;
+  const patrickPct = useAnimatedPct(Math.round((ev.patrick.length / total) * 100));
+  const theresaPct = useAnimatedPct(Math.round((ev.theresa.length / total) * 100));
+
   return (
     <div className="flex-1 flex flex-col animate-fade-in">
       {/* Header */}
-      <div className="shrink-0 px-10 pt-6 pb-4 text-center space-y-1 border-b border-white/5">
-        <p className="ornament">Ergebnis · Frage {(gameState?.currentQuestionIndex ?? 0) + 1}</p>
-        <h2 className="font-serif italic text-white text-2xl">{ev.question}</h2>
+      <div className="shrink-0 px-10 pt-5 pb-4 text-center space-y-2 border-b border-white/5">
+        <p className="ornament text-sm">Ergebnis · Frage {(gameState?.currentQuestionIndex ?? 0) + 1}</p>
+        <h2 className="font-serif italic text-white" style={{ fontSize: "clamp(1.2rem, 2.5vw, 2rem)" }}>
+          {ev.question}
+        </h2>
+
+        {/* Split bar — election-style */}
+        <div className="flex h-3 rounded-full overflow-hidden mt-3 mx-auto max-w-2xl"
+          style={{ gap: ev.voted > 0 && !tie ? 2 : 0 }}>
+          <div style={{
+            width: `${patrickPct}%`, backgroundColor: "#38bdf8",
+            transition: "width 1.2s cubic-bezier(0.4,0,0.2,1)",
+            boxShadow: patrickWins && !tie ? "0 0 12px #38bdf880" : "none",
+          }} />
+          <div style={{
+            width: `${theresaPct}%`, backgroundColor: "#f472b6",
+            transition: "width 1.2s cubic-bezier(0.4,0,0.2,1)",
+            boxShadow: theresaWins && !tie ? "0 0 12px #f472b680" : "none",
+          }} />
+          {ev.voted === 0 && <div className="flex-1 bg-white/5" />}
+        </div>
       </div>
 
       {/* Two columns */}
