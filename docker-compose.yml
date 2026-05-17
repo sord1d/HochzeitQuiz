@@ -1,12 +1,16 @@
 version: "3.9"
 
+# Basis-Stack ohne Ports und ohne Reverse Proxy.
+# Wird kombiniert mit:
+#   docker-compose.caddy.yml  → automatisches HTTPS via Caddy
+#   docker-compose.nginx.yml  → bestehender nginx-Proxy
+
 services:
   backend:
     build:
       context: ./backend
     container_name: schuhspiel-backend
     restart: unless-stopped
-    # Kein externer Port – Caddy übernimmt das Routing
     environment:
       - PORT=3001
       - NODE_ENV=production
@@ -31,31 +35,6 @@ services:
     networks:
       - schuhspiel-net
 
-  caddy:
-    image: caddy:2-alpine
-    container_name: schuhspiel-caddy
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-      - "443:443/udp"   # HTTP/3
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - caddy_data:/data
-      - caddy_config:/config
-    environment:
-      - DOMAIN=${DOMAIN}
-      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
-    depends_on:
-      - frontend
-      - backend
-    networks:
-      - schuhspiel-net
-
 networks:
   schuhspiel-net:
     name: schuhspiel-net
-
-volumes:
-  caddy_data:    # SSL-Zertifikate (persistent)
-  caddy_config:  # Caddy-Konfigurationscache

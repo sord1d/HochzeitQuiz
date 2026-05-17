@@ -1,0 +1,30 @@
+# Overlay für Caddy-Modus (automatisches HTTPS, kein bestehender Proxy).
+# Verwendung: docker compose -f docker-compose.yml -f docker-compose.caddy.yml up -d --build
+
+version: "3.9"
+
+services:
+  caddy:
+    image: caddy:2-alpine
+    container_name: schuhspiel-caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    environment:
+      - DOMAIN=${DOMAIN}
+      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - schuhspiel-net
+
+volumes:
+  caddy_data:
+  caddy_config:
