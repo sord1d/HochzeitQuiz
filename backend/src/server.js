@@ -44,8 +44,8 @@ function buildEvaluationPayload(questionIndex) {
   for (const [pid, vote] of qVotes.entries()) {
     const p = participants.get(pid);
     if (!p) continue;
-    if (vote === "Patrick") patrick.push({ id: p.id, name: p.name, color: p.color });
-    else theresa.push({ id: p.id, name: p.name, color: p.color });
+    if (vote === "Patrick") patrick.push({ id: p.id, name: p.name, colorBase: p.colorBase, colorAccent: p.colorAccent });
+    else theresa.push({ id: p.id, name: p.name, colorBase: p.colorBase, colorAccent: p.colorAccent });
   }
 
   return {
