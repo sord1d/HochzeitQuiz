@@ -59,14 +59,16 @@ function buildEvaluationPayload(questionIndex) {
 }
 
 function broadcastState() {
+  const qVotesNow = getVotesForQuestion(gameState.currentQuestionIndex);
   const payload = {
     status: gameState.status,
     currentQuestionIndex: gameState.currentQuestionIndex,
     question: questions[gameState.currentQuestionIndex] || null,
     totalQuestions: questions.length,
     participantCount: participants.size,
-    voteCount: getVotesForQuestion(gameState.currentQuestionIndex).size,
+    voteCount: qVotesNow.size,
     participants: Array.from(participants.values()),
+    votedParticipantIds: Array.from(qVotesNow.keys()),
   };
 
   if (gameState.status === "EVALUATION" || gameState.status === "FINISHED") {
@@ -79,14 +81,16 @@ function broadcastState() {
 // ── Socket events ─────────────────────────────────────────────────────────────
 io.on("connection", (socket) => {
   // Send current state immediately on connect
+  const qVotesInit = getVotesForQuestion(gameState.currentQuestionIndex);
   const initialPayload = {
     status: gameState.status,
     currentQuestionIndex: gameState.currentQuestionIndex,
     question: questions[gameState.currentQuestionIndex] || null,
     totalQuestions: questions.length,
     participantCount: participants.size,
-    voteCount: getVotesForQuestion(gameState.currentQuestionIndex).size,
+    voteCount: qVotesInit.size,
     participants: Array.from(participants.values()),
+    votedParticipantIds: Array.from(qVotesInit.keys()),
   };
   if (gameState.status === "EVALUATION" || gameState.status === "FINISHED") {
     initialPayload.evaluation = buildEvaluationPayload(gameState.currentQuestionIndex);

@@ -8,34 +8,40 @@ export default function LobbyScreen() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-6 animate-fade-in">
       <div className="w-full max-w-sm space-y-8 text-center">
-        <div className="space-y-2">
-          <h1 className="font-serif text-3xl italic text-white">Patrick & Theresa</h1>
-          <p className="text-surface-3 text-sm tracking-widest uppercase">Schuhspiel</p>
+
+        <div className="space-y-3">
+          <p className="ornament">Schuhspiel</p>
+          <h1 className="font-serif text-5xl italic text-white leading-tight">
+            Patrick<br />&amp; Theresa
+          </h1>
         </div>
 
-        {/* Animated waiting indicator */}
-        <div className="card p-8 space-y-6">
+        <div className="card-gold p-10 space-y-6">
+          {/* Animated rings */}
           <div className="flex justify-center">
-            <div className="relative w-20 h-20">
-              <div className="absolute inset-0 rounded-full border-2 border-white/10 animate-ping" />
-              <div className="absolute inset-2 rounded-full border-2 border-white/20 animate-ping [animation-delay:300ms]" />
-              <div className="absolute inset-4 rounded-full border-2 border-white/30 animate-ping [animation-delay:600ms]" />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-3xl">💍</span>
+            <div className="relative w-24 h-24">
+              <div className="absolute inset-0 rounded-full border border-gold/10 animate-ping" style={{ animationDuration: "2s" }} />
+              <div className="absolute inset-3 rounded-full border border-gold/15 animate-ping" style={{ animationDuration: "2s", animationDelay: "0.4s" }} />
+              <div className="absolute inset-6 rounded-full border border-gold/20 animate-ping" style={{ animationDuration: "2s", animationDelay: "0.8s" }} />
+              <div className="absolute inset-0 flex items-center justify-center text-4xl">
+                💍
               </div>
             </div>
           </div>
 
           <div className="space-y-1">
-            <p className="text-white font-semibold text-lg">Warten auf den Start...</p>
+            <p className="text-white font-semibold text-xl">Warten auf den Start...</p>
             <p className="text-surface-3 text-sm">Der Moderator startet das Spiel gleich.</p>
           </div>
 
           {participant && (
             <div className="flex justify-center">
               <span
-                className="px-4 py-1.5 rounded-full text-sm font-semibold text-surface"
-                style={{ backgroundColor: participant.color }}
+                className="px-5 py-2 rounded-full text-sm font-bold text-surface shadow-lg"
+                style={{
+                  backgroundColor: participant.color,
+                  boxShadow: `0 4px 15px ${participant.color}50`,
+                }}
               >
                 {participant.name}
               </span>
@@ -43,7 +49,7 @@ export default function LobbyScreen() {
           )}
         </div>
 
-        <p className="text-surface-3 text-xs">
+        <p className="text-gold/40 text-xs tracking-widest">
           {count} {count === 1 ? "Gast" : "Gäste"} verbunden
         </p>
       </div>

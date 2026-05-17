@@ -3,16 +3,18 @@ import React from "react";
 export default function FinishedScreen() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center animate-fade-in">
-      <div className="space-y-6">
-        <div className="text-6xl">🎉</div>
-        <div className="space-y-2">
-          <h1 className="font-serif text-3xl italic text-white">Das Spiel ist vorbei!</h1>
-          <p className="text-surface-3 text-sm">
+      <div className="space-y-6 max-w-sm">
+        <div className="text-6xl animate-pulse2">💍</div>
+        <div className="space-y-3">
+          <p className="ornament">Das Spiel ist vorbei</p>
+          <h1 className="font-serif text-4xl italic text-white leading-tight">
+            Patrick &amp; Theresa
+          </h1>
+          <p className="text-gold/60 text-sm leading-relaxed">
             Vielen Dank fürs Mitspielen.<br />
-            Herzlichen Glückwunsch an Patrick & Theresa!
+            Auf viele gemeinsame Jahre! 🥂
           </p>
         </div>
-        <div className="text-4xl">💍</div>
       </div>
     </div>
   );

@@ -14,6 +14,12 @@ export default {
           2: "#334155",
           3: "#475569",
         },
+        gold: {
+          DEFAULT: "#d4af5f",
+          light: "#e8c97a",
+          dark: "#b8943a",
+          muted: "rgba(212,175,95,0.15)",
+        },
       },
       animation: {
         "fade-in": "fadeIn 0.4s ease-out",
