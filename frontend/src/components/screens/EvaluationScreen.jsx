@@ -6,7 +6,14 @@ function VoteColumn({ name, emoji, votes, total, accentColor }) {
   const pct = total > 0 ? Math.round((votes.length / total) * 100) : 0;
 
   return (
-    <div className="card flex-1 flex flex-col min-h-0 p-3 sm:p-4">
+    <div
+      className="flex-1 flex flex-col min-h-0 rounded-2xl border p-3 sm:p-4 backdrop-blur-sm"
+      style={{
+        backgroundColor: `${accentColor}10`,
+        borderColor: `${accentColor}40`,
+        boxShadow: `0 0 30px ${accentColor}15, inset 0 1px 0 ${accentColor}20`,
+      }}
+    >
       {/* Stats — compact, never scrolls away */}
       <div className="shrink-0 text-center pb-2">
         <div className="text-2xl sm:text-3xl">{emoji}</div>
@@ -29,8 +36,8 @@ function VoteColumn({ name, emoji, votes, total, accentColor }) {
       {/* Badges — scrollable if many names */}
       <div className="flex-1 overflow-y-auto min-h-0 mt-2 -mx-1">
         <div className="flex flex-wrap justify-center content-start">
-          {votes.map((v) => (
-            <Badge key={v.id} name={v.name} colorBase={v.colorBase} colorAccent={v.colorAccent} size="sm" />
+          {votes.map((v, i) => (
+            <Badge key={v.id} name={v.name} colorBase={v.colorBase} colorAccent={v.colorAccent} size="lg" index={i} />
           ))}
           {votes.length === 0 && (
             <p className="text-surface-3 text-xs w-full text-center pt-3">Keine Stimmen</p>

@@ -167,7 +167,14 @@ function ModVoting({ gameState, modShowEvaluation }) {
 function EvalColumn({ name, emoji, votes, total, color }) {
   const pct = total > 0 ? Math.round((votes.length / total) * 100) : 0;
   return (
-    <div className="card flex-1 p-4 space-y-3">
+    <div
+      className="flex-1 rounded-2xl border p-4 space-y-3 backdrop-blur-sm"
+      style={{
+        backgroundColor: `${color}10`,
+        borderColor: `${color}40`,
+        boxShadow: `0 0 25px ${color}15, inset 0 1px 0 ${color}20`,
+      }}
+    >
       <div className="text-center">
         <span className="text-2xl">{emoji}</span>
         <p className="font-bold text-white mt-1">{name}</p>
@@ -181,8 +188,8 @@ function EvalColumn({ name, emoji, votes, total, color }) {
         <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: color }} />
       </div>
       <div className="flex flex-wrap justify-center">
-        {votes.map((v) => (
-          <Badge key={v.id} name={v.name} colorBase={v.colorBase} colorAccent={v.colorAccent} size="sm" />
+        {votes.map((v, i) => (
+          <Badge key={v.id} name={v.name} colorBase={v.colorBase} colorAccent={v.colorAccent} size="md" index={i} />
         ))}
         {votes.length === 0 && <p className="text-surface-3 text-xs py-2">Keine Stimmen</p>}
       </div>
