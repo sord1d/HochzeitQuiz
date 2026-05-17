@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p /home/sord1d/Hochzeit/backend/src /home/sord1d/Hochzeit/frontend/src/components/screens /home/sord1d/Hochzeit/frontend/src/context /home/sord1d/Hochzeit/frontend/public)"
+    ],
+    "additionalDirectories": [
+      "/home/sord1d/Hochzeit/backend"
+    ]
+  }
+}

@@ -1,0 +1,18 @@
+module.exports = [
+  "Wer bleibt lieber zu Hause?",
+  "Wer ist der bessere Koch?",
+  "Wer hat den ersten Schritt gemacht?",
+  "Wer braucht länger im Bad?",
+  "Wer ist pünktlicher?",
+  "Wer verbringt mehr Zeit am Handy?",
+  "Wer gibt mehr Geld aus?",
+  "Wer hat zuerst 'Ich liebe dich' gesagt?",
+  "Wer macht mehr im Haushalt?",
+  "Wer sagt mehr Komplimente?",
+  "Wer würde eher den Hochzeitstag vergessen?",
+  "Wer hat den besseren Musikgeschmack?",
+  "Wer ist der Chef in der Beziehung?",
+  "Wer überrascht den anderen öfter?",
+  "Wer vermisst den anderen eher?",
+  "Wer hatte beim Antrag mehr Tränen in den Augen?",
+];
