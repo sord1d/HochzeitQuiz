@@ -3,21 +3,60 @@
 @tailwind utilities;
 
 @layer base {
-  html, body, #root {
-    @apply h-full text-white;
+  html {
+    /* fill behind notch + home bar on iOS */
     background-color: #0f172a;
-    background-image:
-      radial-gradient(ellipse 80% 50% at 50% -10%, rgba(212,175,95,0.07) 0%, transparent 60%);
     -webkit-tap-highlight-color: transparent;
+    text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
   }
+
+  body, #root {
+    @apply text-white;
+    /* dvh = dynamic viewport height (shrinks when address bar is visible on iOS/Android) */
+    min-height: 100dvh;
+    min-height: 100vh; /* fallback */
+    background-color: #0f172a;
+    background-image: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(212,175,95,0.07) 0%, transparent 60%);
+  }
+
   * { @apply box-border; }
 }
 
 @layer components {
+  /* Full-screen container that respects safe areas */
+  .screen {
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+    height: 100vh; /* fallback */
+    padding-top: max(1.25rem, env(safe-area-inset-top));
+    padding-bottom: max(1.25rem, env(safe-area-inset-bottom));
+    padding-left:  max(1.25rem, env(safe-area-inset-left));
+    padding-right: max(1.25rem, env(safe-area-inset-right));
+    overflow: hidden;
+  }
+
+  /* Scrollable screen for forms / lobby */
+  .screen-scroll {
+    display: flex;
+    flex-direction: column;
+    min-height: 100dvh;
+    min-height: 100vh;
+    padding-top: max(1.5rem, env(safe-area-inset-top));
+    padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+    padding-left:  max(1.25rem, env(safe-area-inset-left));
+    padding-right: max(1.25rem, env(safe-area-inset-right));
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold
            transition-all duration-200 active:scale-95 disabled:opacity-40 disabled:pointer-events-none
            shadow-lg;
+    /* Minimum touch target */
+    min-height: 48px;
   }
 
   .card {
@@ -33,9 +72,10 @@
     @apply w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3
            text-white placeholder-surface-3 focus:outline-none focus:border-gold/40
            transition-colors duration-200;
+    /* Prevent iOS zoom on focus (font-size must be >= 16px) */
+    font-size: 16px;
   }
 
-  /* Decorative section divider */
   .ornament {
     @apply flex items-center gap-3 justify-center text-gold/50 text-xs tracking-[0.3em] uppercase;
   }
@@ -51,6 +91,5 @@
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { @apply bg-surface-2 rounded; }
 
-/* Vote button glow on hover */
-.vote-btn-patrick:hover { box-shadow: 0 0 30px rgba(56,189,248,0.25); }
-.vote-btn-theresa:hover { box-shadow: 0 0 30px rgba(244,114,182,0.25); }
+.vote-btn-patrick:active { box-shadow: 0 0 40px rgba(56,189,248,0.3); }
+.vote-btn-theresa:active { box-shadow: 0 0 40px rgba(244,114,182,0.3); }

@@ -240,8 +240,8 @@ export default function ModeratorScreen() {
   const status = gameState?.status ?? "LOBBY";
 
   return (
-    <div className="min-h-screen p-6">
-      <div className="max-w-2xl mx-auto space-y-6">
+    <div className="screen-scroll">
+      <div className="max-w-2xl mx-auto w-full space-y-6">
 
         {/* Top bar */}
         <div className="flex items-center justify-between">

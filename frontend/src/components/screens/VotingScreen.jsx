@@ -11,14 +11,15 @@ export default function VotingScreen() {
   const myChoice = myVotes[qi];
 
   return (
-    <div className="min-h-screen flex flex-col p-5 animate-fade-in">
+    <div className="screen animate-fade-in gap-3">
+
       {/* Progress */}
-      <div className="mb-6 space-y-2">
-        <div className="flex justify-between items-center text-xs">
-          <span className="text-gold/60 tracking-widest">Frage {qi + 1} / {total}</span>
+      <div className="shrink-0 space-y-2">
+        <div className="flex justify-between items-center">
+          <span className="text-gold/60 text-xs tracking-widest">Frage {qi + 1} / {total}</span>
           {participant && (
             <span
-              className="px-3 py-1 rounded-full font-bold text-white text-xs shadow-md"
+              className="px-3 py-1 rounded-full font-bold text-white text-xs"
               style={badgeStyle(participant.colorBase, participant.colorAccent)}
             >
               {participant.name}
@@ -37,46 +38,47 @@ export default function VotingScreen() {
       </div>
 
       {/* Question */}
-      <div className="flex-1 flex flex-col justify-center space-y-6">
-        <div className="card-gold p-7 text-center space-y-3">
-          <p className="ornament">Wer von beiden...</p>
-          <h2 className="font-serif text-2xl md:text-3xl text-white italic leading-snug">
-            {question}
-          </h2>
-        </div>
+      <div className="shrink-0 card-gold px-5 py-4 text-center space-y-2">
+        <p className="ornament text-[10px]">Wer von beiden...</p>
+        <h2 className="font-serif text-xl sm:text-2xl text-white italic leading-snug">
+          {question}
+        </h2>
+      </div>
 
-        {!hasVoted ? (
-          <div className="grid grid-cols-2 gap-4">
-            <button
-              onClick={() => vote("Patrick")}
-              className="vote-btn-patrick card flex flex-col items-center gap-3 p-6
-                         active:scale-95 transition-all duration-200 border-sky-500/20
-                         hover:border-sky-400/40 focus:outline-none"
-            >
-              <span className="text-4xl">👔</span>
-              <span className="font-bold text-xl text-white">Patrick</span>
-            </button>
-            <button
-              onClick={() => vote("Theresa")}
-              className="vote-btn-theresa card flex flex-col items-center gap-3 p-6
-                         active:scale-95 transition-all duration-200 border-pink-500/20
-                         hover:border-pink-400/40 focus:outline-none"
-            >
-              <span className="text-4xl">👗</span>
-              <span className="font-bold text-xl text-white">Theresa</span>
-            </button>
-          </div>
-        ) : (
-          <div className="card-gold p-8 text-center space-y-3 animate-slide-up">
-            <div className="text-5xl mb-2">✓</div>
+      {/* Vote buttons — fill all remaining space */}
+      {!hasVoted ? (
+        <div className="flex-1 grid grid-cols-2 gap-3 min-h-0">
+          <button
+            onClick={() => vote("Patrick")}
+            className="vote-btn-patrick card flex flex-col items-center justify-center gap-3
+                       active:scale-95 transition-all duration-150 border-sky-500/20
+                       active:border-sky-400/60 focus:outline-none select-none"
+          >
+            <span className="text-5xl sm:text-6xl">👔</span>
+            <span className="font-bold text-xl sm:text-2xl text-white">Patrick</span>
+          </button>
+          <button
+            onClick={() => vote("Theresa")}
+            className="vote-btn-theresa card flex flex-col items-center justify-center gap-3
+                       active:scale-95 transition-all duration-150 border-pink-500/20
+                       active:border-pink-400/60 focus:outline-none select-none"
+          >
+            <span className="text-5xl sm:text-6xl">👗</span>
+            <span className="font-bold text-xl sm:text-2xl text-white">Theresa</span>
+          </button>
+        </div>
+      ) : (
+        <div className="flex-1 flex items-center justify-center">
+          <div className="card-gold p-8 text-center space-y-3 animate-slide-up w-full">
+            <div className="text-6xl">✓</div>
             <p className="text-white font-semibold text-xl">Stimme abgegeben!</p>
-            <p className="text-surface-3 text-sm">
+            <p className="text-surface-3">
               Du hast für <span className="font-bold text-white">{myChoice}</span> gestimmt.
             </p>
-            <p className="text-gold/40 text-xs tracking-wider mt-2">Warten auf Auswertung...</p>
+            <p className="text-gold/40 text-xs tracking-wider">Warten auf Auswertung...</p>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

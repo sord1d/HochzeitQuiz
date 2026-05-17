@@ -61,7 +61,7 @@ export default function OnboardingScreen() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6 animate-fade-in">
+    <div className="screen-scroll items-center justify-center animate-fade-in">
       <div className="w-full max-w-sm space-y-8">
 
         {/* Header */}

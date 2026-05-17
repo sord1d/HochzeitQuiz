@@ -2,7 +2,7 @@ import React from "react";
 
 export default function FinishedScreen() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center animate-fade-in">
+    <div className="screen items-center justify-center text-center animate-fade-in">
       <div className="space-y-6 max-w-sm">
         <div className="text-6xl animate-pulse2">💍</div>
         <div className="space-y-3">
