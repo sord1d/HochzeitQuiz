@@ -43,37 +43,31 @@ function TimerCircle({ remaining, total }) {
 function TimerCircleLarge({ remaining, total }) {
   const size = 300;
   const cx   = size / 2;
-  const r    = 120;
+  const r    = 115;
   const circ = 2 * Math.PI * r;
   const pct  = total > 0 ? remaining / total : 0;
   const color = remaining > total * 0.5 ? "#4ade80"
               : remaining > total * 0.2 ? "#facc15"
               : "#f43f5e";
   return (
-    <div style={{ position: "relative", width: size, height: size }}>
-      {/* SVG ring — rotated via style, overflow visible for glow */}
-      <svg
-        width={size} height={size}
-        viewBox={`0 0 ${size} ${size}`}
-        style={{ position: "absolute", inset: 0, transform: "rotate(-90deg)", overflow: "visible" }}
-      >
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}
+      style={{ overflow: "visible" }}>
+      {/* Ring rotated within SVG coordinate space — no CSS transform on the SVG itself */}
+      <g transform={`rotate(-90 ${cx} ${cx})`}>
         <circle cx={cx} cy={cx} r={r} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="12" />
         <circle cx={cx} cy={cx} r={r} fill="none" stroke={color} strokeWidth="12"
           strokeDasharray={`${pct * circ} ${circ}`} strokeLinecap="round"
           style={{ transition: "stroke-dasharray 0.3s linear, stroke 0.5s",
                    filter: `drop-shadow(0 0 20px ${color})` }} />
-      </svg>
-      {/* Number — perfectly centred in same box */}
-      <div style={{
-        position: "absolute", inset: 0,
-        display: "flex", alignItems: "center", justifyContent: "center",
-        fontWeight: 700, fontVariantNumeric: "tabular-nums",
-        fontSize: "8rem", lineHeight: 1,
-        color, textShadow: `0 0 60px ${color}80`,
-      }}>
+      </g>
+      {/* Number centred in SVG — same coordinate space, no alignment bugs */}
+      <text x={cx} y={cx}
+        textAnchor="middle" dominantBaseline="central"
+        fill={color} fontSize="108" fontWeight="700"
+        style={{ filter: `drop-shadow(0 0 30px ${color}80)` }}>
         {remaining}
-      </div>
-    </div>
+      </text>
+    </svg>
   );
 }
 
