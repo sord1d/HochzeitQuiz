@@ -41,26 +41,38 @@ function TimerCircle({ remaining, total }) {
 
 // ── Large timer for beamer voting ─────────────────────────────────────────────
 function TimerCircleLarge({ remaining, total }) {
-  const r = 120;
+  const size = 300;
+  const cx   = size / 2;
+  const r    = 120;
   const circ = 2 * Math.PI * r;
   const pct  = total > 0 ? remaining / total : 0;
   const color = remaining > total * 0.5 ? "#4ade80"
               : remaining > total * 0.2 ? "#facc15"
               : "#f43f5e";
   return (
-    <div className="relative" style={{ width: 300, height: 300 }}>
-      <svg width="300" height="300" overflow="visible" className="-rotate-90 absolute inset-0">
-        <circle cx="150" cy="150" r={r} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="12" />
-        <circle cx="150" cy="150" r={r} fill="none" stroke={color} strokeWidth="12"
+    <div style={{ position: "relative", width: size, height: size }}>
+      {/* SVG ring — rotated via style, overflow visible for glow */}
+      <svg
+        width={size} height={size}
+        viewBox={`0 0 ${size} ${size}`}
+        style={{ position: "absolute", inset: 0, transform: "rotate(-90deg)", overflow: "visible" }}
+      >
+        <circle cx={cx} cy={cx} r={r} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="12" />
+        <circle cx={cx} cy={cx} r={r} fill="none" stroke={color} strokeWidth="12"
           strokeDasharray={`${pct * circ} ${circ}`} strokeLinecap="round"
           style={{ transition: "stroke-dasharray 0.3s linear, stroke 0.5s",
-                   filter: `drop-shadow(0 0 24px ${color}90)` }} />
+                   filter: `drop-shadow(0 0 20px ${color})` }} />
       </svg>
-      <span className="absolute inset-0 flex items-center justify-center font-bold tabular-nums"
-        style={{ fontSize: "8rem", lineHeight: 1, color,
-                 textShadow: `0 0 60px ${color}80` }}>
+      {/* Number — perfectly centred in same box */}
+      <div style={{
+        position: "absolute", inset: 0,
+        display: "flex", alignItems: "center", justifyContent: "center",
+        fontWeight: 700, fontVariantNumeric: "tabular-nums",
+        fontSize: "8rem", lineHeight: 1,
+        color, textShadow: `0 0 60px ${color}80`,
+      }}>
         {remaining}
-      </span>
+      </div>
     </div>
   );
 }
