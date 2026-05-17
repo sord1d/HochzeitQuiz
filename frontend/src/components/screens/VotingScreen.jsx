@@ -2,6 +2,7 @@ import React from "react";
 import { useSocket } from "../../context/SocketContext";
 import { badgeStyle } from "../Badge";
 import { useCountdown } from "../../hooks/useCountdown";
+import { useTimerSounds } from "../../hooks/useTimerSounds";
 
 // SVG countdown ring
 function TimerRing({ remaining, total }) {
@@ -46,6 +47,7 @@ export default function VotingScreen() {
   const timerEndsAt = gameState?.timerEndsAt ?? null;
   const timerDuration = gameState?.timerDuration ?? 0;
   const remaining = useCountdown(timerEndsAt);
+  useTimerSounds(remaining);
   const timerActive = timerEndsAt !== null;
   const timerExpired = timerActive && remaining === 0;
   const votingClosed = hasVoted || timerExpired;

@@ -3,15 +3,6 @@ import { useSocket } from "../../context/SocketContext";
 import { Badge } from "../Badge";
 import { useCountdown } from "../../hooks/useCountdown";
 
-const TIMER_OPTIONS = [
-  { label: "Kein Timer", value: 0 },
-  { label: "15 Sek",     value: 15 },
-  { label: "30 Sek",     value: 30 },
-  { label: "45 Sek",     value: 45 },
-  { label: "60 Sek",     value: 60 },
-  { label: "90 Sek",     value: 90 },
-];
-
 // ── Reset button mit Bestätigung ──────────────────────────────────────────────
 function ResetButton({ onReset }) {
   const [confirm, setConfirm] = useState(false);
@@ -95,23 +86,59 @@ function ModLobby({ gameState, modStartGame }) {
       </div>
 
       {/* Timer selection */}
-      <div className="card p-5 space-y-3">
+      <div className="card p-5 space-y-4">
         <p className="text-white font-semibold text-sm">Timer pro Frage</p>
-        <div className="grid grid-cols-3 gap-2">
-          {TIMER_OPTIONS.map((opt) => (
-            <button key={opt.value} onClick={() => setTimerDuration(opt.value)}
-              className={`py-2 px-3 rounded-xl text-sm font-semibold transition-all duration-150 border ${
-                timerDuration === opt.value
+
+        <div className="flex items-center gap-3">
+          {/* Decrement */}
+          <button onClick={() => setTimerDuration((v) => Math.max(0, v - 5))}
+            className="w-10 h-10 rounded-xl border border-white/10 text-white font-bold text-lg
+                       hover:border-white/30 active:scale-95 transition-all shrink-0">
+            −
+          </button>
+
+          {/* Number input */}
+          <div className="flex-1 relative">
+            <input
+              type="number" min="0" max="300"
+              value={timerDuration}
+              onChange={(e) => setTimerDuration(Math.max(0, parseInt(e.target.value) || 0))}
+              className="w-full text-center text-2xl font-bold bg-white/5 border border-white/10
+                         rounded-xl py-2 text-white focus:outline-none focus:border-gold/40
+                         transition-colors [appearance:textfield]
+                         [&::-webkit-inner-spin-button]:appearance-none"
+            />
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-surface-3 text-sm pointer-events-none">
+              Sek
+            </span>
+          </div>
+
+          {/* Increment */}
+          <button onClick={() => setTimerDuration((v) => Math.min(300, v + 5))}
+            className="w-10 h-10 rounded-xl border border-white/10 text-white font-bold text-lg
+                       hover:border-white/30 active:scale-95 transition-all shrink-0">
+            +
+          </button>
+        </div>
+
+        {/* Quick presets */}
+        <div className="flex gap-2 flex-wrap">
+          {[0, 15, 30, 45, 60, 90].map((v) => (
+            <button key={v} onClick={() => setTimerDuration(v)}
+              className={`px-3 py-1 rounded-lg text-xs font-semibold border transition-all duration-150 ${
+                timerDuration === v
                   ? "border-gold/50 bg-gold/10 text-gold"
-                  : "border-white/10 text-surface-3 hover:border-white/20 hover:text-white"
+                  : "border-white/10 text-surface-3 hover:text-white hover:border-white/20"
               }`}>
-              {opt.label}
+              {v === 0 ? "Kein Timer" : `${v}s`}
             </button>
           ))}
         </div>
+
         {timerDuration > 0 && (
           <p className="text-xs text-gold/50 text-center">
-            Abstimmung schließt automatisch nach {timerDuration} Sekunden — Ergebnis zeigst du manuell.
+            Schließt nach {timerDuration}s automatisch — Ergebnis zeigst du manuell.
+            Soundeffekte ab 5s vor Ende.
           </p>
         )}
       </div>
