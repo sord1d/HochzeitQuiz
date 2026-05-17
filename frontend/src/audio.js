@@ -38,7 +38,11 @@ function beep(freq, duration, volume = 0.25, delay = 0) {
 }
 
 export function playTick() {
-  beep(1047, 0.08, 0.22); // C6
+  beep(1047, 0.08, 0.28); // C6 — laut, letzte Sekunden
+}
+
+export function playSoftTick() {
+  beep(660, 0.06, 0.08); // E5 — leise, ganzer Timer
 }
 
 export function playStop() {
