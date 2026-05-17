@@ -41,24 +41,24 @@ function TimerCircle({ remaining, total }) {
 
 // ── Large timer for beamer voting ─────────────────────────────────────────────
 function TimerCircleLarge({ remaining, total }) {
-  const r = 88;
+  const r = 120;
   const circ = 2 * Math.PI * r;
   const pct  = total > 0 ? remaining / total : 0;
   const color = remaining > total * 0.5 ? "#4ade80"
               : remaining > total * 0.2 ? "#facc15"
               : "#f43f5e";
   return (
-    <div className="relative flex items-center justify-center" style={{ width: 220, height: 220 }}>
-      <svg width="220" height="220" className="-rotate-90 absolute inset-0">
-        <circle cx="110" cy="110" r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="8" />
-        <circle cx="110" cy="110" r={r} fill="none" stroke={color} strokeWidth="8"
+    <div className="relative flex items-center justify-center" style={{ width: 300, height: 300 }}>
+      <svg width="300" height="300" className="-rotate-90 absolute inset-0">
+        <circle cx="150" cy="150" r={r} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="12" />
+        <circle cx="150" cy="150" r={r} fill="none" stroke={color} strokeWidth="12"
           strokeDasharray={`${pct * circ} ${circ}`} strokeLinecap="round"
           style={{ transition: "stroke-dasharray 0.3s linear, stroke 0.5s",
-                   filter: `drop-shadow(0 0 16px ${color}80)` }} />
+                   filter: `drop-shadow(0 0 24px ${color}90)` }} />
       </svg>
       <span className="relative z-10 font-bold tabular-nums"
-        style={{ fontSize: "clamp(4rem, 8vw, 7rem)", color,
-                 textShadow: `0 0 40px ${color}60` }}>
+        style={{ fontSize: "8rem", lineHeight: 1, color,
+                 textShadow: `0 0 60px ${color}80` }}>
         {remaining}
       </span>
     </div>
@@ -198,7 +198,7 @@ function BeamerVoting({ gameState }) {
 
       {/* Timer / waiting — cross-fade */}
       {timerActive && (
-        <div className="relative flex items-center justify-center shrink-0" style={{ height: 220 }}>
+        <div className="relative flex items-center justify-center shrink-0" style={{ height: 300 }}>
           {/* Countdown — fades out at zero */}
           <div style={{ opacity: timerExpired ? 0 : 1, transition: "opacity 0.8s ease",
                         position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -207,9 +207,14 @@ function BeamerVoting({ gameState }) {
           {/* Waiting — fades in at zero */}
           <div style={{ opacity: timerExpired ? 1 : 0, transition: "opacity 0.8s ease 0.4s",
                         position: "absolute", inset: 0, display: "flex", flexDirection: "column",
-                        alignItems: "center", justifyContent: "center", gap: 12 }}>
-            <p className="text-white/60 text-3xl tracking-widest">Abstimmung beendet</p>
-            <p className="text-gold/40 text-lg tracking-widest">Warten auf Auswertung...</p>
+                        alignItems: "center", justifyContent: "center", gap: 16 }}>
+            <p className="text-white/60 tracking-widest whitespace-nowrap"
+               style={{ fontSize: "clamp(1.8rem, 3vw, 2.5rem)" }}>
+              Abstimmung beendet
+            </p>
+            <p className="text-gold/50 tracking-[0.3em] whitespace-nowrap uppercase text-sm">
+              Warten auf Auswertung...
+            </p>
           </div>
         </div>
       )}
