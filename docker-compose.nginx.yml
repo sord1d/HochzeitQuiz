@@ -9,7 +9,7 @@ version: "3.9"
 services:
   frontend:
     ports:
-      - "127.0.0.1:8080:80"
+      - "127.0.0.1:${FRONTEND_INTERNAL_PORT:-8088}:80"
 
   backend:
     ports:
