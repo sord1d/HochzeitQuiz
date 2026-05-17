@@ -1,0 +1,26 @@
+# Override für bestehenden nginx-Reverse-Proxy.
+# Verwendung: docker compose -f docker-compose.yml -f docker-compose.nginx.yml up -d --build
+#
+# – Frontend und Backend werden auf 127.0.0.1 exponiert (kein öffentlicher Zugriff)
+# – Caddy wird deaktiviert (nginx übernimmt SSL + Routing)
+
+version: "3.9"
+
+services:
+  frontend:
+    ports:
+      - "127.0.0.1:8080:80"
+
+  backend:
+    ports:
+      - "127.0.0.1:3001:3001"
+
+  # Caddy durch no-op ersetzen – startet, tut nichts, beendet sich sofort
+  caddy:
+    image: alpine:3
+    command: ["echo", "Caddy deaktiviert – nginx-Modus aktiv"]
+    restart: "no"
+    depends_on: []
+    ports: []
+    volumes: []
+    environment: []
