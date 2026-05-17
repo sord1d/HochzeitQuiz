@@ -42,7 +42,7 @@ export function SocketProvider({ children }) {
     socketRef.current?.emit("vote", { vote: choice });
   };
 
-  const modStartGame = () => socketRef.current?.emit("mod_start_game");
+  const modStartGame = (timerDuration = 0) => socketRef.current?.emit("mod_start_game", { timerDuration });
   const modShowEvaluation = () => socketRef.current?.emit("mod_show_evaluation");
   const modNextQuestion = () => socketRef.current?.emit("mod_next_question");
   const modResetGame = () => socketRef.current?.emit("mod_reset_game");
